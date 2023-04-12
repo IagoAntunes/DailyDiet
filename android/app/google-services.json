@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "229282523157",
+    "project_id": "dailydiet-c0397",
+    "storage_bucket": "dailydiet-c0397.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229282523157:android:a79b5a7539faf2a705c61c",
+        "android_client_info": {
+          "package_name": "com.example.dailydiet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "229282523157-l2t9t2cktd3tgsplmnss75d122fgpqnt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE6riTXrwmYYvNaBKy5oGRCLjCZMsJ3WI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "229282523157-l2t9t2cktd3tgsplmnss75d122fgpqnt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
