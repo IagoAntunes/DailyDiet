@@ -28,7 +28,7 @@ class CardItemList extends StatelessWidget {
         child: Row(
           children: [
             Text(
-              "${element.hours.hour}:${element.hours.minute}",
+              element.hour,
               style: GoogleFonts.nunitoSans(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -52,7 +52,7 @@ class CardItemList extends StatelessWidget {
               height: 15,
               width: 15,
               decoration: BoxDecoration(
-                color: AppColors.redMid,
+                color: element.inDiet ? AppColors.greenMid : AppColors.redMid,
                 shape: BoxShape.circle,
               ),
             )

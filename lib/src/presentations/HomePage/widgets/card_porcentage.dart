@@ -30,9 +30,12 @@ class CardPorcentage extends StatelessWidget {
             Positioned(
               right: 0,
               top: 0,
-              child: Icon(
-                Icons.call_made,
-                color: AppColors.greenDark,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Icon(
+                  Icons.call_made,
+                  color: AppColors.greenDark,
+                ),
               ),
             ),
             Container(

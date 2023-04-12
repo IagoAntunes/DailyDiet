@@ -19,7 +19,7 @@ class SendSnackPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Continue Assim",
+                isDiet ? "Continue Assim" : "Que pena!",
                 style: GoogleFonts.nunitoSans(
                   fontSize: 24,
                   fontWeight: FontWeight.w700,
@@ -27,7 +27,9 @@ class SendSnackPage extends StatelessWidget {
                 ),
               ),
               Text(
-                "Você continua dentro da dieta. Muito bem!",
+                isDiet
+                    ? "Você continua dentro da dieta. Muito bem!"
+                    : "Você saiu da dieta dessa vez, mas continue se esforçando e não desista!",
                 style: GoogleFonts.nunitoSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

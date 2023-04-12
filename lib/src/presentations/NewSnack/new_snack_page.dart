@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dailydiet/core/colors.dart';
+import 'package:dailydiet/src/models/snack_model.dart';
 import 'package:dailydiet/src/presentations/SendSnack/send_snack_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class NewSnackPage extends StatefulWidget {
   const NewSnackPage({super.key});
@@ -12,6 +16,9 @@ class NewSnackPage extends StatefulWidget {
 }
 
 class _NewSnackPageState extends State<NewSnackPage> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? selectedHour;
   DateTime? selectedDate;
   bool? isDiet;
@@ -71,6 +78,13 @@ class _NewSnackPageState extends State<NewSnackPage> {
                         ),
                       ),
                       child: TextFormField(
+                        controller: titleController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Este campo não pode estar vazio!';
+                          }
+                          return null;
+                        },
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -97,8 +111,15 @@ class _NewSnackPageState extends State<NewSnackPage> {
                         ),
                       ),
                       child: TextFormField(
+                        controller: descriptionController,
                         minLines: 6,
                         maxLines: 10,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Este campo não pode estar vazio!';
+                          }
+                          return null;
+                        },
                         decoration: const InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(15),
@@ -153,12 +174,10 @@ class _NewSnackPageState extends State<NewSnackPage> {
                                     ),
                                   ),
                                   child: Center(
-                                    child: Expanded(
-                                      child: selectedDate != null
-                                          ? Text(DateFormat('dd/MM/yyyy')
-                                              .format(selectedDate!))
-                                          : const Icon(Icons.date_range),
-                                    ),
+                                    child: selectedDate != null
+                                        ? Text(DateFormat('dd/MM/yyyy')
+                                            .format(selectedDate!))
+                                        : const Icon(Icons.date_range),
                                   ),
                                 ),
                               ),
@@ -218,11 +237,9 @@ class _NewSnackPageState extends State<NewSnackPage> {
                                     ),
                                   ),
                                   child: Center(
-                                    child: Expanded(
-                                      child: selectedHour != null
-                                          ? Text(selectedHour.toString())
-                                          : const Icon(Icons.date_range),
-                                    ),
+                                    child: selectedHour != null
+                                        ? Text(selectedHour.toString())
+                                        : const Icon(Icons.date_range),
                                   ),
                                 ),
                               ),
@@ -361,13 +378,30 @@ class _NewSnackPageState extends State<NewSnackPage> {
               ),
               const SizedBox(height: 100),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => SendSnackPage(isDiet: isDiet!),
-                    ),
-                  );
+                onPressed: () async {
+                  if (_form.currentState!.validate() &&
+                      isDiet != null &&
+                      selectedDate != null &&
+                      selectedHour != null) {
+                    Timestamp myTimestamp = Timestamp.fromDate(selectedDate!);
+                    SnackModel snack = SnackModel(
+                      title: titleController.text,
+                      description: descriptionController.text,
+                      date: selectedDate!,
+                      hour: selectedHour!,
+                      inDiet: isDiet!,
+                    );
+                    await firestore
+                        .collection('snacks')
+                        .doc(Uuid().v1())
+                        .set(snack.toMap());
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SendSnackPage(isDiet: isDiet!),
+                      ),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.gray2,

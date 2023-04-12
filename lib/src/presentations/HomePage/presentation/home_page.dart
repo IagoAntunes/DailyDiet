@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dailydiet/src/models/snack_model.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/button_new_snack.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/card_porcentage.dart';
@@ -14,26 +15,38 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<SnackModel> listaElementos = [
-    SnackModel(
-      title: 'X-tudo',
-      date: DateTime(2023, 5, 10),
-      hours: const TimeOfDay(hour: 20, minute: 10),
-      inDiet: true,
-    ),
-    SnackModel(
-      title: 'X-tudo2',
-      date: DateTime(2023, 5, 10),
-      hours: const TimeOfDay(hour: 20, minute: 10),
-      inDiet: true,
-    ),
-    SnackModel(
-      title: 'X-tudo',
-      date: DateTime(2023, 6, 23),
-      hours: const TimeOfDay(hour: 20, minute: 10),
-      inDiet: true,
-    ),
-  ];
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+  List<SnackModel> listaElementos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    getAll();
+  }
+
+  void getAll() async {
+    QuerySnapshot<Map<String, dynamic>> lista =
+        await firestore.collection('snacks').get();
+
+    // Convertendo em um objeto DateTime
+    for (var valor in lista.docs) {
+      dynamic timestampValue = valor.data()['date'];
+      Map<String, dynamic> snack = valor.data();
+      if (timestampValue is int) {
+        Timestamp timestamp =
+            Timestamp.fromMillisecondsSinceEpoch(timestampValue);
+        DateTime dateTime = timestamp.toDate();
+        valor.data()['date'] = dateTime;
+        listaElementos.add(SnackModel.fromMap(snack));
+      } else if (timestampValue is Timestamp) {
+        DateTime dateTime = timestampValue.toDate();
+        valor.data()['date'] = dateTime;
+        listaElementos.add(SnackModel.fromMap(snack));
+      }
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
