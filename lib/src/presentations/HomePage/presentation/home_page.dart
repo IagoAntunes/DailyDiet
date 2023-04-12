@@ -1,12 +1,10 @@
 import 'package:dailydiet/src/models/snack_model.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/button_new_snack.dart';
-import 'package:dailydiet/src/presentations/HomePage/widgets/card_item_list.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/card_porcentage.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/header.dart';
 import 'package:dailydiet/src/presentations/HomePage/widgets/list_items.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:grouped_list/grouped_list.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

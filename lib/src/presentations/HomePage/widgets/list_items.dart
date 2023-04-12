@@ -6,11 +6,11 @@ import '../../../models/snack_model.dart';
 import 'card_item_list.dart';
 
 class ListSnack extends StatelessWidget {
-  ListSnack({
+  const ListSnack({
     super.key,
     required this.listSnack,
   });
-  List<SnackModel> listSnack;
+  final List<SnackModel> listSnack;
   @override
   Widget build(BuildContext context) {
     return Expanded(

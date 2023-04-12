@@ -14,7 +14,7 @@ class ButtonNewSnack extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => NewSnackPage(),
+            builder: (context) => const NewSnackPage(),
           ),
         );
       },

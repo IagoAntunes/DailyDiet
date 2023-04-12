@@ -5,11 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../models/snack_model.dart';
 
 class CardItemList extends StatelessWidget {
-  CardItemList({
+  const CardItemList({
     super.key,
     required this.element,
   });
-  SnackModel element;
+  final SnackModel element;
   @override
   Widget build(BuildContext context) {
     return Padding(
