@@ -1,6 +1,8 @@
 import 'package:dailydiet/core/colors.dart';
+import 'package:dailydiet/src/presentations/SendSnack/send_snack_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class NewSnackPage extends StatefulWidget {
   const NewSnackPage({super.key});
@@ -10,6 +12,9 @@ class NewSnackPage extends StatefulWidget {
 }
 
 class _NewSnackPageState extends State<NewSnackPage> {
+  String? selectedHour;
+  DateTime? selectedDate;
+  bool? isDiet;
   final _form = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -115,21 +120,45 @@ class _NewSnackPageState extends State<NewSnackPage> {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 2,
-                                    color: AppColors.gray6,
+                              GestureDetector(
+                                onTap: () async {
+                                  DateTime? pickedDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(2000),
+                                      lastDate: DateTime(2101));
+                                  if (pickedDate != null) {
+                                    String formattedDate =
+                                        DateFormat('dd/MM/yyyy')
+                                            .format(pickedDate);
+                                    setState(
+                                      () {
+                                        selectedDate = pickedDate;
+                                      },
+                                    );
+                                  }
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      width: 2,
+                                      color: AppColors.gray6,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(6),
+                                    ),
                                   ),
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(6),
-                                  ),
-                                ),
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        EdgeInsets.symmetric(horizontal: 10),
+                                  child: Center(
+                                    child: Expanded(
+                                      child: selectedDate != null
+                                          ? Text(DateFormat('dd/MM/yyyy')
+                                              .format(selectedDate!))
+                                          : const Icon(Icons.date_range),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -149,21 +178,51 @@ class _NewSnackPageState extends State<NewSnackPage> {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Container(
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    width: 2,
-                                    color: AppColors.gray6,
+                              GestureDetector(
+                                onTap: () async {
+                                  showTimePicker(
+                                    context: context,
+                                    initialTime:
+                                        const TimeOfDay(hour: 6, minute: 0),
+                                  ).then(
+                                    (time) {
+                                      if (time != null) {
+                                        setState(() {
+                                          selectedHour =
+                                              DateFormat('HH:mm').format(
+                                            DateTime(
+                                              DateTime.now().year,
+                                              DateTime.now().month,
+                                              DateTime.now().day,
+                                              time.hour,
+                                              time.minute,
+                                            ),
+                                          );
+                                        });
+                                      }
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  width: double.infinity,
+                                  height: 50,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      width: 2,
+                                      color: AppColors.gray6,
+                                    ),
+                                    borderRadius: const BorderRadius.all(
+                                      Radius.circular(6),
+                                    ),
                                   ),
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(6),
-                                  ),
-                                ),
-                                child: TextFormField(
-                                  decoration: const InputDecoration(
-                                    border: InputBorder.none,
-                                    contentPadding:
-                                        EdgeInsets.symmetric(horizontal: 10),
+                                  child: Center(
+                                    child: Expanded(
+                                      child: selectedHour != null
+                                          ? Text(selectedHour.toString())
+                                          : const Icon(Icons.date_range),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -184,34 +243,57 @@ class _NewSnackPageState extends State<NewSnackPage> {
                     Row(
                       children: [
                         Expanded(
-                          child: Container(
-                            height: 55,
-                            decoration: BoxDecoration(
-                              color: AppColors.gray6,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(6),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isDiet == true) {
+                                  isDiet = null;
+                                } else {
+                                  isDiet = true;
+                                }
+                              });
+                            },
+                            child: Container(
+                              height: 55,
+                              decoration: BoxDecoration(
+                                color: isDiet == null
+                                    ? AppColors.gray6
+                                    : (isDiet!
+                                        ? AppColors.greenLight
+                                        : AppColors.gray6),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(6),
+                                ),
+                                border: isDiet == null
+                                    ? null
+                                    : (isDiet!
+                                        ? Border.all(
+                                            width: 1,
+                                            color: AppColors.greenDark,
+                                          )
+                                        : null),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 10,
-                                  width: 10,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.greenDark,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 10,
+                                    width: 10,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.greenDark,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Sim',
-                                  style: GoogleFonts.nunitoSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Sim',
+                                    style: GoogleFonts.nunitoSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -219,34 +301,56 @@ class _NewSnackPageState extends State<NewSnackPage> {
                           width: 5,
                         ),
                         Expanded(
-                          child: Container(
-                            height: 55,
-                            decoration: BoxDecoration(
-                              color: AppColors.gray6,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(6),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (isDiet == false) {
+                                  isDiet = null;
+                                } else {
+                                  isDiet = false;
+                                }
+                              });
+                            },
+                            child: Container(
+                              height: 55,
+                              decoration: BoxDecoration(
+                                color: isDiet == null
+                                    ? AppColors.gray6
+                                    : (isDiet!
+                                        ? AppColors.gray6
+                                        : AppColors.redLight),
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(6),
+                                ),
+                                border: isDiet == null
+                                    ? null
+                                    : (isDiet!
+                                        ? null
+                                        : Border.all(
+                                            width: 1,
+                                            color: AppColors.redDark)),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  height: 10,
-                                  width: 10,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.redDark,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 10,
+                                    width: 10,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.redDark,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  'Não',
-                                  style: GoogleFonts.nunitoSans(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Não',
+                                    style: GoogleFonts.nunitoSans(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -255,13 +359,13 @@ class _NewSnackPageState extends State<NewSnackPage> {
                   ],
                 ),
               ),
-              const Expanded(child: SizedBox()),
+              const SizedBox(height: 100),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const NewSnackPage(),
+                      builder: (context) => SendSnackPage(isDiet: isDiet!),
                     ),
                   );
                 },
