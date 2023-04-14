@@ -1,16 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dailydiet/core/colors.dart';
 import 'package:dailydiet/src/models/snack_model.dart';
-import 'package:dailydiet/src/presentations/SendSnack/send_snack_page.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
-class NewSnackPage extends StatefulWidget {
-  const NewSnackPage({super.key});
+import '../SendSnack/send_snack_page.dart';
 
+class NewSnackPage extends StatefulWidget {
+  const NewSnackPage({super.key, this.snack});
+  final SnackModel? snack;
   @override
   State<NewSnackPage> createState() => _NewSnackPageState();
 }
@@ -23,6 +23,19 @@ class _NewSnackPageState extends State<NewSnackPage> {
   DateTime? selectedDate;
   bool? isDiet;
   final _form = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.snack != null) {
+      titleController.text = widget.snack!.title;
+      descriptionController.text = widget.snack!.description;
+      selectedDate = widget.snack!.date;
+      selectedHour = widget.snack!.hour;
+      isDiet = widget.snack!.inDiet;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +44,7 @@ class _NewSnackPageState extends State<NewSnackPage> {
         backgroundColor: AppColors.gray5,
         elevation: 0,
         title: Text(
-          'Nova Refeição',
+          widget.snack == null ? 'Nova Refeição' : 'Editar Refeição',
           style: GoogleFonts.nunitoSans(
             color: Colors.black,
             fontSize: 18,
@@ -149,9 +162,9 @@ class _NewSnackPageState extends State<NewSnackPage> {
                                       firstDate: DateTime(2000),
                                       lastDate: DateTime(2101));
                                   if (pickedDate != null) {
-                                    String formattedDate =
-                                        DateFormat('dd/MM/yyyy')
-                                            .format(pickedDate);
+                                    // String formattedDate =
+                                    //     DateFormat('dd/MM/yyyy')
+                                    //         .format(pickedDate);
                                     setState(
                                       () {
                                         selectedDate = pickedDate;
@@ -377,52 +390,72 @@ class _NewSnackPageState extends State<NewSnackPage> {
                 ),
               ),
               const SizedBox(height: 100),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_form.currentState!.validate() &&
-                      isDiet != null &&
-                      selectedDate != null &&
-                      selectedHour != null) {
-                    Timestamp myTimestamp = Timestamp.fromDate(selectedDate!);
-                    SnackModel snack = SnackModel(
-                      title: titleController.text,
-                      description: descriptionController.text,
-                      date: selectedDate!,
-                      hour: selectedHour!,
-                      inDiet: isDiet!,
-                    );
-                    await firestore
-                        .collection('snacks')
-                        .doc(Uuid().v1())
-                        .set(snack.toMap());
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SendSnackPage(isDiet: isDiet!),
+              Hero(
+                tag: 'btnNewSnack',
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_form.currentState!.validate() &&
+                        isDiet != null &&
+                        selectedDate != null &&
+                        selectedHour != null) {
+                      SnackModel snack = SnackModel(
+                        id: widget.snack == null
+                            ? const Uuid().v1().toString()
+                            : widget.snack!.id,
+                        title: titleController.text,
+                        description: descriptionController.text,
+                        date: selectedDate!,
+                        hour: selectedHour!,
+                        inDiet: isDiet!,
+                      );
+                      if (widget.snack != null) {
+                        await firestore
+                            .collection('snacks')
+                            .doc(widget.snack!.id)
+                            .update(snack.toMap());
+                      } else {
+                        await firestore
+                            .collection('snacks')
+                            .doc(snack.id)
+                            .set(snack.toMap());
+                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SendSnackPage(isDiet: isDiet!),
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gray2,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.all(15),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(6),
                       ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.gray2,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.all(15),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(6),
                     ),
                   ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.add,
-                      color: AppColors.gray4,
-                    ),
-                    const SizedBox(width: 10),
-                    const Text('Nova refeição'),
-                  ],
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.add,
+                        color: AppColors.gray4,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        widget.snack == null
+                            ? 'Nova refeição'
+                            : 'Editar refeição',
+                        style: GoogleFonts.nunitoSans(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

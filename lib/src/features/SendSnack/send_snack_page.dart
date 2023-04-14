@@ -1,17 +1,18 @@
 import 'package:dailydiet/core/colors.dart';
-import 'package:dailydiet/src/presentations/HomePage/presentation/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../HomePage/views/home_page.dart';
+
 class SendSnackPage extends StatelessWidget {
-  SendSnackPage({super.key, required this.isDiet});
-  bool isDiet;
+  const SendSnackPage({super.key, required this.isDiet});
+  final bool isDiet;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(25),
-        child: Container(
+        child: SizedBox(
           width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -30,6 +31,7 @@ class SendSnackPage extends StatelessWidget {
                 isDiet
                     ? "Você continua dentro da dieta. Muito bem!"
                     : "Você saiu da dieta dessa vez, mas continue se esforçando e não desista!",
+                textAlign: TextAlign.center,
                 style: GoogleFonts.nunitoSans(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,

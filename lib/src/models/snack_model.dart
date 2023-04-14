@@ -1,15 +1,14 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class SnackModel {
+  String id;
   String title;
   String description;
   DateTime date;
   String hour;
   bool inDiet;
   SnackModel({
+    required this.id,
     required this.title,
     required this.description,
     required this.date,
@@ -19,9 +18,10 @@ class SnackModel {
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
+      'id': id,
       'title': title,
       'description': description,
-      'date': Timestamp.fromDate(date),
+      'date': date.millisecondsSinceEpoch,
       'hour': hour,
       'inDiet': inDiet,
     };
@@ -29,9 +29,10 @@ class SnackModel {
 
   factory SnackModel.fromMap(Map<String, dynamic> map) {
     return SnackModel(
+      id: map['id'] as String,
       title: map['title'] as String,
       description: map['description'] as String,
-      date: (map['date'] as Timestamp).toDate(),
+      date: DateTime.fromMillisecondsSinceEpoch(map['date'] as int),
       hour: map['hour'] as String,
       inDiet: map['inDiet'] as bool,
     );

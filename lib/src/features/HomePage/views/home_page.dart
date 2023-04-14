@@ -1,11 +1,14 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dailydiet/src/features/HomePage/widgets/card_porcentage.dart';
 import 'package:dailydiet/src/models/snack_model.dart';
-import 'package:dailydiet/src/presentations/HomePage/widgets/button_new_snack.dart';
-import 'package:dailydiet/src/presentations/HomePage/widgets/card_porcentage.dart';
-import 'package:dailydiet/src/presentations/HomePage/widgets/header.dart';
-import 'package:dailydiet/src/presentations/HomePage/widgets/list_items.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../widgets/button_new_snack.dart';
+import '../widgets/header.dart';
+import '../widgets/list_items.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -17,32 +20,33 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   List<SnackModel> listaElementos = [];
-
+  late StreamSubscription listener;
   @override
   void initState() {
     super.initState();
-    getAll();
+    addListeners();
   }
 
-  void getAll() async {
-    QuerySnapshot<Map<String, dynamic>> lista =
-        await firestore.collection('snacks').get();
+  @override
+  void dispose() {
+    super.dispose();
+    listener.cancel();
+  }
+
+  void addListeners() async {
+    listener = firestore.collection('snacks').snapshots().listen((snapshot) {
+      getAll();
+    });
+  }
+
+  void getAll({QuerySnapshot<Map<String, dynamic>>? snapshot}) async {
+    listaElementos = [];
+    snapshot = await firestore.collection('snacks').get();
 
     // Convertendo em um objeto DateTime
-    for (var valor in lista.docs) {
-      dynamic timestampValue = valor.data()['date'];
+    for (var valor in snapshot.docs) {
       Map<String, dynamic> snack = valor.data();
-      if (timestampValue is int) {
-        Timestamp timestamp =
-            Timestamp.fromMillisecondsSinceEpoch(timestampValue);
-        DateTime dateTime = timestamp.toDate();
-        valor.data()['date'] = dateTime;
-        listaElementos.add(SnackModel.fromMap(snack));
-      } else if (timestampValue is Timestamp) {
-        DateTime dateTime = timestampValue.toDate();
-        valor.data()['date'] = dateTime;
-        listaElementos.add(SnackModel.fromMap(snack));
-      }
+      listaElementos.add(SnackModel.fromMap(snack));
     }
     setState(() {});
   }
@@ -59,7 +63,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               const Header(),
               const SizedBox(height: 20),
-              const CardPorcentage(),
+              CardPorcentage(listaElementos: listaElementos),
               const SizedBox(height: 30),
               Text(
                 "Refeições",
